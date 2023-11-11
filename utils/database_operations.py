@@ -49,40 +49,11 @@ def read_csv(file_path, key_column=None, record_value=None):
 
     return pd.DataFrame() if key_column else pd.DataFrame()
 
-def combine_data(store_id, status_data, business_hours_data, timezone_data):
-    # Convert status_data to a DataFrame
-    status_df = pd.DataFrame(status_data)
 
-    # Getting timezone else setting timezone to America/Chicago as default
-    timezone = timezone_data[0]['timezone_str'] if len(timezone_data) else "America/Chicago"
-
-    # If business hours are empty, then consider the store open 24/7
-    if len(business_hours_data) == 0:
-        business_hours_data = [{"store_id": store_id, "day": day, 'start_time_local': '00:00:00', 'end_time_local': '23:59:59'} for day in range(7)]
-
-    # Convert status_df timestamps to local timezone
-    status_df["timestamp_local"] = status_df["timestamp_utc"].apply(lambda x: utc_to_local(x, timezone))
-
-    # Merge business_hours_data and status_df based on the day
-    business_hours_df = pd.DataFrame(business_hours_data)
-    merged_data = pd.merge(business_hours_df, status_df, left_on=["store_id", "day"], right_on=["store_id", status_df["timestamp_local"].dt.weekday])
-
-    # Select and reorder columns as needed
-    merged_data = merged_data[["store_id", "day", "start_time_local", "end_time_local", "status", "timestamp_utc", "timestamp_local"]]
-
-    print(merged_data)
-    return merged_data
 
 # Example usage:
 store_id_to_check = 1371971221718848145
-status_csv = 'status.csv'
-business_hours_csv = 'Menu hours.csv'
-timezone_csv = 'timezone.csv'
 
-status_data = read_csv(file_path=status_csv, key_column="store_id", record_value=store_id_to_check)
-business_hours_data = read_csv(file_path=business_hours_csv, key_column="store_id", record_value=store_id_to_check)
-timezone_data = read_csv(file_path=timezone_csv, key_column="store_id", record_value=store_id_to_check)
 
-# print(utc_to_local("2023-01-24 13:01:02.587792 UTC", "Asia/Kolkata"))
-# print(read_csv(business_hours_csv, "store_id", 4229534553524953507))
-combine_data(store_id_to_check, status_data, business_hours_data, timezone_data)
+
+# print(data_initialization()["status_data"][0])
