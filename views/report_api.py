@@ -14,6 +14,12 @@ q = Queue(connection=conn)
 
 @blueprint.route("/trigger_report", methods=['POST'])
 def trigger_report():
+    """
+          Triggers the generation of a report for a specific store based on the provided data.
+          Expects a JSON payload in the POST request containing the store_id.
+          Returns:
+              flask.Response: A JSON response containing the status and results of the triggered report.
+              """
     res_hour, res_day, res_week= calculate_store_time(server_time,flask.request.get_json()['store_id'] )
 
     results= {
@@ -28,7 +34,9 @@ def trigger_report():
     }
     return flask.jsonify({"status": 200, "results": results})
 
-
+# This function was intended for handling report retrieval but is currently causing performance issues
+# Keeping it as a reference and indicating its purpose
+"""
 @blueprint.route("/get_report", methods=["GET"])
 def get_report():
     global futures_dict
@@ -53,3 +61,4 @@ def get_report():
         #     return flask.jsonify({"status": "Running", "message": "Report is still being processed"})
     else:
         return flask.jsonify({"status": "Error", "message": "Report ID not found"})
+"""
