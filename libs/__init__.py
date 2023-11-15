@@ -2,17 +2,30 @@
 from libs.logic import *
 from concurrent.futures import ProcessPoolExecutor, wait
 from datetime import datetime, timezone
+
 # server_time = datetime(2023, 1, 25, 0, 56, 23, tzinfo=timezone.utc)
 
 # Move calculate_store_time to a module-level function
 def calculate_store_time(server_time, store_id):
+    """
+    Calculate downtime and uptime for different time intervals for a specific store.
+
+    Args:
+        server_time (datetime): The current server time.
+        store_id (int): The ID of the store.
+
+    Returns:
+        tuple: A tuple containing downtime and uptime durations for the last hour, last day, and last week.
+    """
     # print(store_id, server_time, "in lib __init__")
-    res_hour = calculate_inactive_active_time_for_last_hour(server_time,store_id)
+    res_hour = calculate_inactive_active_time_for_last_hour(server_time, store_id)
     res_day = calculate_inactive_active_time_for_last_day(server_time, store_id, current_day_in_server=server_time.weekday())
     res_week = calculate_inactive_active_time_for_last_week(server_time, store_id)
     # print((res_hour, res_day, res_week))
     return (res_hour, res_day, res_week)
 
+# This function was intended for parallel execution but was taking too much time
+# Keeping it as a reference and indicating its purpose
 # def calculating_time_for_each_store(executor, batch_size=10000):
 #     server_time = datetime(2023, 1, 25, 0, 56, 23, tzinfo=timezone.utc)
 #
