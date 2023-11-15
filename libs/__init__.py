@@ -5,7 +5,6 @@ from datetime import datetime, timezone
 
 # server_time = datetime(2023, 1, 25, 0, 56, 23, tzinfo=timezone.utc)
 
-# Move calculate_store_time to a module-level function
 def calculate_store_time(server_time, store_id):
     """
     Calculate downtime and uptime for different time intervals for a specific store.

@@ -1,5 +1,6 @@
-import concurrent.futures
-import uuid
+from rq import Queue
+from worker import conn
+# import uuid
 from datetime import datetime, timezone
 from libs import calculate_store_time
 import flask
@@ -7,19 +8,12 @@ import json
 blueprint = flask.Blueprint("report_api", __name__, url_prefix="/api/v1")
 
 futures_dict = {}
-executor = concurrent.futures.ThreadPoolExecutor()
+# executor = ProcessPoolExecutor(max_workers=None)
 server_time = datetime(2023, 1, 25, 0, 56, 23, tzinfo=timezone.utc)
+q = Queue(connection=conn)
 
 @blueprint.route("/trigger_report", methods=['POST'])
 def trigger_report():
-    """
-        Triggers the generation of a report for a specific store based on the provided data.
-
-        Expects a JSON payload in the POST request containing the store_id.
-
-        Returns:
-            flask.Response: A JSON response containing the status and results of the triggered report.
-            """
     res_hour, res_day, res_week= calculate_store_time(server_time,flask.request.get_json()['store_id'] )
 
     results= {
@@ -34,9 +28,7 @@ def trigger_report():
     }
     return flask.jsonify({"status": 200, "results": results})
 
-# This function was intended for handling report retrieval but is currently causing performance issues
-# Keeping it as a reference and indicating its purpose
-"""
+
 @blueprint.route("/get_report", methods=["GET"])
 def get_report():
     global futures_dict
@@ -61,4 +53,3 @@ def get_report():
         #     return flask.jsonify({"status": "Running", "message": "Report is still being processed"})
     else:
         return flask.jsonify({"status": "Error", "message": "Report ID not found"})
-"""
